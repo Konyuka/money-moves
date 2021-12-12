@@ -3,7 +3,7 @@ import Router from "next/router"
 import { useState } from "react";
 import { hash } from 'bcryptjs';
 
-export default function Register(){
+export default function Register(req, res){
     const [name, setName] = useState("Michael Saiba");
     const [email, setEmail] = useState("michaelsaiba84@gmail.com");
     const [password, setPassword] = useState("password");
@@ -18,6 +18,7 @@ export default function Register(){
             body: JSON.stringify(body),
         });
         await Router.push("/");
+        console.log(res)
         } catch (error) {
         console.error(error);
         }
