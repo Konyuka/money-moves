@@ -12,13 +12,16 @@ export default function Register(req, res){
     e.preventDefault();
     try {
         const body = { name, email, password: await hash(password, 12) };
-        await fetch("http://localhost:3000/api/auth/signup", {
+        const checkEmail = await fetch("http://localhost:3000/api/auth/signup", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(body),
         });
-        await Router.push("/");
-        console.log(res)
+        if(checkEmail.status == 422){
+            alert('Email already exists')
+        }else{
+            await Router.push("/");
+        }
         } catch (error) {
         console.error(error);
         }
