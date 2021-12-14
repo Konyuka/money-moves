@@ -1,7 +1,7 @@
 import React from "react"
 import Router from "next/router"
 import { useState } from "react";
-import { hash } from 'bcryptjs';
+// import { hash } from 'bcryptjs';
 
 export default function Register(req, res){
     const [name, setName] = useState("Michael Saiba");
@@ -11,7 +11,8 @@ export default function Register(req, res){
     const submitData = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     try {
-        const body = { name, email, password: await hash(password, 12) };
+        // const body = { name, email, password: await hash(password, 12) };
+        const body = { name, email, password };
         const checkEmail = await fetch("http://localhost:3000/api/auth/signup", {
             method: "POST",
             headers: { "Content-Type": "application/json" },

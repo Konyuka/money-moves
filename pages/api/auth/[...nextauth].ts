@@ -1,47 +1,146 @@
-import NextAuth, { NextAuthOptions } from "next-auth"
-import CredentialsProvider from "next-auth/providers/credentials"
+import NextAuth from "next-auth";
+import CredentialProvider from "next-auth/providers/credentials"
+import prisma from "../../../lib/prisma";
+import { hash } from 'bcryptjs';
+// let userAccount = null;
 
-export const authOptions: NextAuthOptions = {
-    providers: [
-        CredentialsProvider({
-            name: 'Credentials',
-            async authorize(credentials, req) {
-                const user = {
-                    /* add function to get user */
+export default NextAuth({
+  providers: [
+    CredentialProvider({
+      name: "credentials",
+      credentials: {
+        username: {
+          label: "Email",
+          type: "text",
+          placeholder: "johndoe@test.com",
+        },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+                const user = await prisma.user.findFirst({
+                    where: {
+                        email: credentials.email,
+                        password: credentials.password
+                    }
+                })
+                
+                if (user !== null)
+                {
+                    userAccount = user;
+                    return user;
                 }
-                return user
-            },
-            credentials: {
-                domain: {
-                    label: "Domain",
-                    type: "text ",
-                    placeholder: "CORPNET",
-                    value: "CORPNET",
-                },
-                username: { label: "Username", type: "text ", placeholder: "jsmith" },
-                password: { label: "Password", type: "password" },
-            },
-            // credentials: {
-            //     username: { label: "Username", type: "text", placeholder: "jsmith" },
-            //     password: { label: "Password", type: "password" }
-            // },
-            
-            // async authorize(credentials, req) {
-            //     const user = { id: 1, name: 'J Smith', email: 'jsmith@example.com' }
+                else {
+                    return null;
+                }
+      }
+    }),
+  ],
+  callbacks: {
+    jwt: ({ token, user }) => {
+      // first time jwt callback is run, user object is available
+      if (user) {
+        token.id = user.id;
+      }
 
-            //     if (user) {
-            //         // Any object returned will be saved in `user` property of the JWT
-            //         return user
-            //     } else {
-            //         // If you return null or false then the credentials will be rejected
-            //         return null
-            //         // You can also Reject this callback with an Error or with a URL:
-            //         // throw new Error('error message') // Redirect to error page
-            //         // throw '/path/to/redirect'        // Redirect to a URL
-            //     }
-            // }
-        })
-    ]
-}
+      return token;
+    },
+    session: ({ session, token }) => {
+      if (token) {
+        session.id = token.id;
+      }
 
-export default NextAuth(authOptions)
+      return session;
+    },
+  },
+  secret: "test",
+  jwt: {
+    secret: "test",
+    encryption: true,
+  },
+  pages: {
+    signIn: "auth/sigin",
+  },
+});
+
+// const options = {
+//     cookie: {
+//         secure: process.env.NODE_ENV && process.env.NODE_ENV === 'production',
+//     },
+//     session: {
+//         jwt: true,
+//         maxAge: 30 * 24 * 60 * 60
+//     },
+//     providers: [
+//         CredentialsProvider({
+//             id: 'credentials',
+//             name: "Credentials",
+//             async authorize(credentials) {
+//                 const user = await prisma.user.findFirst({
+//                     where: {
+//                         // email: 'michaelsaiba84@gmail.com',
+//                         email: credentials.email,
+//                         password: '$2a$12$PJB7oMAwM0hGNkX/TyiiWubJ/B6dz2vVP3derKAInwue5ZKRbjX/m'
+//                         // password: await hash(credentials.password, 12)
+//                         // password: credentials.password
+//                     }
+//                 })
+                
+//                 if (user !== null)
+//                 {
+//                     userAccount = user;
+//                     return user;
+//                 }
+//                 else {
+//                     return null;
+//                 }
+//             }
+//         })
+//     ],
+//     pages: {
+//       signIn: "/",
+//     },
+//     callbacks: {
+//         async signIn(user, account, profile) {
+//             if (typeof user.userId !== typeof undefined)
+//             {
+//                 if (user.isActive === '1')
+//                 {
+//                     return user;
+//                 }
+//                 else
+//                 {
+//                     return false;
+//                 }
+//             }
+//             else
+//             {
+//                 return false;
+//             }
+//         },
+//         async session(session, token) {
+//             if (userAccount !== null)
+//             {
+//                 session.user = userAccount;
+//             }
+//             else if (typeof token.user !== typeof undefined && (typeof session.user === typeof undefined 
+//                 || (typeof session.user !== typeof undefined && typeof session.user.userId === typeof undefined)))
+//             {
+//                 session.user = token.user;
+//             }
+//             else if (typeof token !== typeof undefined)
+//             {
+//                 session.token = token;
+//             }
+//             return session;
+//         },
+//         async jwt(token, user, account, profile, isNewUser) {
+//             if (typeof user !== typeof undefined)
+//             {
+//                 token.user = user;
+//             }
+//             return token;
+//         }
+//     }
+// }
+
+// export default (req, res) => NextAuth(req, res, options)
