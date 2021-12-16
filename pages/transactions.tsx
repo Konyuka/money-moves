@@ -81,10 +81,10 @@ export default function Transactions(){
                             USD
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            Regional Paradigm Technician
+                            10 Jan 2020
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            jane.cooper@example.com
+                            10 Jan 2020
                           </td>
                         </tr>
                       </tbody>

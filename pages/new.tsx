@@ -15,7 +15,7 @@ export const getStaticProps: GetStaticProps = async () => {
   return { props: { users} };
 };
 
-const Draft: React.FC = (props) => {
+const New: React.FC = (props) => {
   const { data: session, status } = useSession()
 
     if (status === "loading") {
@@ -27,7 +27,55 @@ const Draft: React.FC = (props) => {
     }
 
     const otherUsers = props.users.filter(obj => obj.id !== session.id);
-    const user = session.user.name    
+    const user = session.user.name   
+    const senderId = session.id   
+    // console.log(senderId)
+    
+    const [amount, setAmount] = useState("");
+    const [sourceCurrency, setSourceCurrency] = useState("");
+    const [targetCurrency, setTargetCurrency] = useState("");
+    const [receiverId, setReceiverId] = useState("");
+    const [rate, setRate] = useState("");
+
+    const checkRates = async () =>{
+        alert('check rates')
+
+        const res = await fetch(`https://freecurrencyapi.net/api/v2/latest?apikey=0e8e9aa0-5ea0-11ec-b7f9-853f0cb3f3c3&base_currency=${sourceCurrency}`)
+        const data = await res.json()
+        const fxs = data.data
+        const rates = fxs[`${targetCurrency}`]
+        console.log(targetCurrency)
+        setRate(rates)
+        console.log(fxs)
+        console.log(rates);
+    }
+
+    const submitData = async (e: React.SyntheticEvent) => {
+      e.preventDefault();
+      
+      const body = { 
+          senderId,
+          receiverId,
+          sourceCurrency,
+          targetCurrency,
+          amount,
+          rate, 
+        };
+      console.log(body)  
+      // try {
+      //   const body = { 
+      //     senderId: userId,
+      //   };
+      //   await fetch("https://michael-saiba-head-start.vercel.app/api/post/", {
+      //     method: "POST",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify(body),
+      //   });
+      //   await Router.push("/drafts");
+      // } catch (error) {
+      //   console.error(error);
+      // }
+    };
 
   return (
     <Layout>
@@ -44,10 +92,11 @@ const Draft: React.FC = (props) => {
     <div className="mt-1 sm:mt-0">
       <div className="md:grid md:grid-cols-3 md:gap-6 p-6">
         <div className="mt-5 md:mt-0 md:col-span-3">
-          <form action="#" method="POST">
+          <form onSubmit={submitData}>
             <div className="shadow overflow-hidden sm:rounded-md">
               <div className="px-4 py-5 bg-white sm:p-6">
                 <div className="grid grid-cols-6 gap-6">
+
                   <div className="col-span-6 sm:col-span-3">
                     <label className="block text-sm font-medium text-gray-700">Sender name</label>
                     <input value={user} disabled type="text" name="first-name" id="first-name" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
@@ -55,7 +104,7 @@ const Draft: React.FC = (props) => {
 
                   <div className="col-span-6 sm:col-span-3">
                     <label className="block text-sm font-medium text-gray-700">Receiver Name</label>
-                    <select id="country" name="country" className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <select onChange={(e) => setReceiverId(e.target.value)} id="country" name="country" className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                       <option selected disabled>Select User</option>
                       {
                         otherUsers.map((user)=>(
@@ -64,19 +113,25 @@ const Draft: React.FC = (props) => {
                       }
                     </select>
                   </div>
+
                   <div className="col-span-6 sm:col-span-3">
                     <label className="block text-sm font-medium text-gray-700">Source Currency</label>
-                    <select id="country" name="country" className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                      <option selected disabled>Select Currency</option>
+                    <select onChange={(e) => setSourceCurrency(e.target.value)} id="country" name="country" className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                      {/* <option selected disabled>Select Currency</option> */}
                       <option value="USD">Dollars</option>
                       <option value="EUR">Euro</option>
                       <option value="NGN">Naira</option>
                     </select>
                   </div>
+
                   <div className="col-span-6 sm:col-span-3">
                     <label className="block text-sm font-medium text-gray-700">Target Currency</label>
-                    <select id="country" name="country" className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                      <option selected disabled>Select Currency</option>
+                    <select onChange={(e) => {
+                        setTargetCurrency(e.target.value)
+                        checkRates()
+                      }} 
+                      id="country" name="country" className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                      {/* <option selected disabled>Select Currency</option> */}
                       <option value="USD">Dollars</option>
                       <option value="EUR">Euro</option>
                       <option value="NGN">Naira</option>
@@ -85,28 +140,24 @@ const Draft: React.FC = (props) => {
 
                   <div className="col-span-6 pb-8">
                     <label className="block text-sm font-medium text-gray-700">Amount</label>
-                    <input type="number" name="street-address" id="street-address" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                    <input onChange={(e) => setAmount(e.target.value)} value={amount} type="number" name="street-address" id="street-address" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                   </div>
 
                   <div className="col-span-2 sm:col-span-1 lg:col-span-1">
-                    <label className="block text-sm font-medium text-gray-700">Sending</label>
-                    <input disabled type="text" name="city" id="city" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                  </div>
-
-                  <div className="col-span-2 sm:col-span-1 lg:col-span-1">
-                    <label className="block text-sm font-medium text-gray-700">To user</label>
-                    <input disabled type="text" name="region" id="region" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                  </div>
-
-                  <div className="col-span-2 sm:col-span-1 lg:col-span-1">
-                    <label className="block text-sm font-medium text-gray-700">To Receive</label>
-                    <input disabled type="text" name="postal-code" id="postal-code"  className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                    <label className="block text-sm font-medium text-gray-700">Sent in <span className="text-indigo-600">{sourceCurrency}</span></label>
+                    <input value={amount} disabled type="text" name="city" id="city" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                   </div>
 
                   <div className="col-span-2 sm:col-span-1 lg:col-span-1">
                     <label className="block text-sm font-medium text-gray-700">Exchange Rates</label>
                     <input disabled type="text" name="postal-code" id="postal-code"  className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                   </div>
+
+                  <div className="col-span-2 sm:col-span-1 lg:col-span-1">
+                    <label className="block text-sm font-medium text-gray-700">Received in <span className="text-indigo-600">{targetCurrency}</span></label>
+                    <input disabled type="text" name="postal-code" id="postal-code"  className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                  </div>
+
                 </div>
               </div>
               <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
@@ -130,4 +181,4 @@ const Draft: React.FC = (props) => {
   );
 };
 
-export default Draft;
+export default New;
