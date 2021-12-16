@@ -14,5 +14,35 @@ model User {
   password      String?   
   createdAt     DateTime  @default(now()) @map(name: "created_at")
   updatedAt     DateTime  @updatedAt @map(name: "updated_at")
+  transactions  Transaction[]
+
   @@map(name: "users")
 }
+
+model Transaction {
+  id              Int       @default(autoincrement()) @id
+  transactionId   String
+  members         User      @relation(fields: [senderId, receiverId], references: [id, id])
+  senderId        Int
+  receiverId      Int
+  currencies      Currency  @relation(fields: [sendCurrency, receiveCurrency], references: [id, id])
+  sendCurrency    Int
+  receiveCurrency Int
+  rate            Float
+  amount          Float
+  createdAt       DateTime  @default(now()) @map(name: "created_at")
+  updatedAt       DateTime  @updatedAt @map(name: "updated_at")
+
+  @@map(name: "transactions")
+}
+
+model Currency {
+  id              Int       @default(autoincrement()) @id
+  name            String
+  createdAt       DateTime  @default(now()) @map(name: "created_at")
+  updatedAt       DateTime  @updatedAt @map(name: "updated_at")
+  transactions  Transaction[]
+
+  @@map(name: "currencies")
+}
+
