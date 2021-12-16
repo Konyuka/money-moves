@@ -1,7 +1,7 @@
 import Router from "next/router"
 import { useState, useEffect  } from "react";
 import { GetStaticProps } from "next"
-import { signOut, useSession } from "next-auth/react"
+import { useSession } from "next-auth/react"
 import React from "react"
 import Layout from "../components/Layout";
 import Link from 'next/link'
