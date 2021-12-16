@@ -4,6 +4,8 @@ import { useSession } from "next-auth/react"
 import Link from 'next/link'
 import { GetStaticProps } from "next"
 import prisma from '../lib/prisma';
+import Router from "next/router"
+
 
 export const getStaticProps: GetStaticProps = async () => {
   const users = await prisma.user.findMany({
@@ -56,19 +58,30 @@ const New: React.FC = (props) => {
     const submitData = async (e: React.SyntheticEvent) => {
       e.preventDefault();
       
-      const body = { 
-          senderId,
-          receiverId,
-          sourceCurrency,
-          targetCurrency,
-          amount,
-          rate, 
-        };
-      if(senderId && receiverId && sourceCurrency && targetCurrency && amount && rate){
-        console.log(body)
-      }else{
-        alert('Provide all required data')
-      }  
+        if(senderId && receiverId && sourceCurrency && targetCurrency && amount && rate){
+          try {
+            const body = { 
+              senderId,
+              receiverId,
+              sourceCurrency,
+              targetCurrency,
+              amount,
+              rate,
+              toReceive:rate*amount 
+            };
+            await fetch(`${window.location.origin}/api/transaction/`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(body),
+            });
+            alert('done')
+            // await Router.push("/transactions");
+          } catch (error) {
+            console.error(error);
+          }
+        }else{
+          alert('Provide all required data')
+        }  
         
       // try {
       //   const body = { 

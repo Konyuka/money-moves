@@ -30,6 +30,7 @@ model Transaction {
   receiveCurrency String
   rate            Float
   amount          Float
+  toReceive       Float
   createdAt       DateTime  @default(now()) @map(name: "created_at")
   updatedAt       DateTime  @updatedAt @map(name: "updated_at")
 
