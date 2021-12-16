@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import { useSession } from "next-auth/react"
 import Link from 'next/link'
@@ -38,8 +38,6 @@ const New: React.FC = (props) => {
     const [rate, setRate] = useState("");
 
     const checkRates = async () =>{
-        alert('check rates')
-
         const res = await fetch(`https://freecurrencyapi.net/api/v2/latest?apikey=0e8e9aa0-5ea0-11ec-b7f9-853f0cb3f3c3&base_currency=${sourceCurrency}`)
         const data = await res.json()
         const fxs = data.data
@@ -49,6 +47,11 @@ const New: React.FC = (props) => {
         console.log(fxs)
         console.log(rates);
     }
+
+    useEffect(() => {
+      checkRates();  
+    },
+    [sourceCurrency, targetCurrency])
 
     const submitData = async (e: React.SyntheticEvent) => {
       e.preventDefault();
@@ -61,7 +64,12 @@ const New: React.FC = (props) => {
           amount,
           rate, 
         };
-      console.log(body)  
+      if(senderId && receiverId && sourceCurrency && targetCurrency && amount && rate){
+        console.log(body)
+      }else{
+        alert('Provide all required data')
+      }  
+        
       // try {
       //   const body = { 
       //     senderId: userId,
@@ -99,12 +107,12 @@ const New: React.FC = (props) => {
 
                   <div className="col-span-6 sm:col-span-3">
                     <label className="block text-sm font-medium text-gray-700">Sender name</label>
-                    <input value={user} disabled type="text" name="first-name" id="first-name" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                    <input required value={user} disabled type="text" name="first-name" id="first-name" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                   </div>
 
                   <div className="col-span-6 sm:col-span-3">
                     <label className="block text-sm font-medium text-gray-700">Receiver Name</label>
-                    <select onChange={(e) => setReceiverId(e.target.value)} id="country" name="country" className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <select required onChange={(e) => setReceiverId(e.target.value)} id="country" name="country" className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                       <option selected disabled>Select User</option>
                       {
                         otherUsers.map((user)=>(
@@ -116,8 +124,8 @@ const New: React.FC = (props) => {
 
                   <div className="col-span-6 sm:col-span-3">
                     <label className="block text-sm font-medium text-gray-700">Source Currency</label>
-                    <select onChange={(e) => setSourceCurrency(e.target.value)} id="country" name="country" className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                      {/* <option selected disabled>Select Currency</option> */}
+                    <select required onChange={(e) => setSourceCurrency(e.target.value)} id="country" name="country" className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                      <option selected disabled>Select Currency</option>
                       <option value="USD">Dollars</option>
                       <option value="EUR">Euro</option>
                       <option value="NGN">Naira</option>
@@ -126,12 +134,12 @@ const New: React.FC = (props) => {
 
                   <div className="col-span-6 sm:col-span-3">
                     <label className="block text-sm font-medium text-gray-700">Target Currency</label>
-                    <select onChange={(e) => {
+                    <select required onChange={(e) => {
+                        // checkRates()
                         setTargetCurrency(e.target.value)
-                        checkRates()
                       }} 
                       id="country" name="country" className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                      {/* <option selected disabled>Select Currency</option> */}
+                      <option selected disabled>Select Currency</option>
                       <option value="USD">Dollars</option>
                       <option value="EUR">Euro</option>
                       <option value="NGN">Naira</option>
@@ -140,7 +148,7 @@ const New: React.FC = (props) => {
 
                   <div className="col-span-6 pb-8">
                     <label className="block text-sm font-medium text-gray-700">Amount</label>
-                    <input onChange={(e) => setAmount(e.target.value)} value={amount} type="number" name="street-address" id="street-address" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                    <input required onChange={(e) => setAmount(e.target.value)} value={amount} type="number" name="street-address" id="street-address" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                   </div>
 
                   <div className="col-span-2 sm:col-span-1 lg:col-span-1">
@@ -150,12 +158,12 @@ const New: React.FC = (props) => {
 
                   <div className="col-span-2 sm:col-span-1 lg:col-span-1">
                     <label className="block text-sm font-medium text-gray-700">Exchange Rates</label>
-                    <input disabled type="text" name="postal-code" id="postal-code"  className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                    <input value={rate} disabled type="text" name="postal-code" id="postal-code"  className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                   </div>
 
                   <div className="col-span-2 sm:col-span-1 lg:col-span-1">
                     <label className="block text-sm font-medium text-gray-700">Received in <span className="text-indigo-600">{targetCurrency}</span></label>
-                    <input disabled type="text" name="postal-code" id="postal-code"  className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                    <input value={amount*rate} disabled type="text" name="postal-code" id="postal-code"  className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                   </div>
 
                 </div>
