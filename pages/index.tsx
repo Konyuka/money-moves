@@ -1,7 +1,7 @@
 import React from "react"
 import Router from "next/router"
 import { useState } from "react";
-import { useSession, signIn, signOut } from "next-auth/react"
+import { useSession, signIn } from "next-auth/react"
 import { hash } from 'bcryptjs';
 
 export default function Login(){
