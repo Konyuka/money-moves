@@ -24,7 +24,10 @@ export default function Transactions(){
       <Layout>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 flex justify-between pb-4">
           <h1 className="text-2xl font-semibold text-gray-900">Transactions</h1>
-          <button type="button" className="inline-flex items-center px-2 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          <span className="font-normal">USD: <span className="text-indigo-600 font-bold">1000.00</span> </span>
+          <span className="font-normal">EUR: <span className="text-indigo-600 font-bold">0.00</span> </span>
+          <span className="font-normal">NGN: <span className="text-indigo-600 font-bold">0.00</span> </span> 
+          <button onClick={() => Router.push("/new")} type="button" className="inline-flex items-center px-2 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
             New Transaction
           </button>
         </div>
