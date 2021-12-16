@@ -17,7 +17,7 @@ export default function Login(){
         event.stopPropagation();
 
         await signIn("credentials", {
-            email, password, callbackUrl: `${window.location.origin}/dashboard`, redirect: false }
+            email, password, callbackUrl: `${window.location.origin}/transaction`, redirect: false }
         ).then(function(result){
             console.log(result)
             if (result.error !== null)
@@ -31,7 +31,7 @@ export default function Login(){
                 else
                 {
                     // setLoginError(result.error);
-                    Router.push("/dashboard");
+                    // Router.push("/transactions");
                 }
             }
             else

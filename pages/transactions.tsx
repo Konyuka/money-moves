@@ -4,14 +4,29 @@ import { GetStaticProps } from "next"
 import { signOut, useSession } from "next-auth/react"
 import React from "react"
 import Layout from "../components/Layout";
+import Link from 'next/link'
 
 
-export default function Dashboard(){
+
+export default function Transactions(){
+    const { data: session, status } = useSession()
+
+    if (status === "loading") {
+      return <p>Loading...</p>
+    }
+
+    if (status === "unauthenticated") {
+      return <p>Access Denied! Please <span className="font-bold text-green-600"> <Link href="/"><a>Login </a></Link> </span> </p>
+    }
+
     return (
   
       <Layout>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 flex justify-between pb-4">
           <h1 className="text-2xl font-semibold text-gray-900">Transactions</h1>
+          <button type="button" className="inline-flex items-center px-2 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            New Transaction
+          </button>
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
           <div className="py-4">
@@ -23,38 +38,50 @@ export default function Dashboard(){
                       <thead className="bg-gray-50">
                         <tr>
                           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Name
+                            ID
                           </th>
                           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Title
+                            From
                           </th>
                           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Email
+                            To
                           </th>
                           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Role
+                            Value
                           </th>
-                          <th scope="col" className="relative px-6 py-3">
-                            <span className="sr-only">Edit</span>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Currency
+                          </th>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            CreatedAT
+                          </th>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            UpdatedAt
                           </th>
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
                         <tr>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            1
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                             Jane Cooper
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            Michael Saiba
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            1000USD
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            USD
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             Regional Paradigm Technician
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             jane.cooper@example.com
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            Admin
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <a href="#" className="text-indigo-600 hover:text-indigo-900">Edit</a>
                           </td>
                         </tr>
                       </tbody>
