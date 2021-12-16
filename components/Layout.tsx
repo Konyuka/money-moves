@@ -5,8 +5,12 @@ type Props = {
   children: ReactNode;
 };
 
-const Layout: React.FC<Props> = (props) => (
-  <div>
+
+const Layout: React.FC<Props> =  (props) => {
+  // console.log(session)
+  const { data: session, status } = useSession()
+  return (
+    <div>
     <div>
   <div className="fixed inset-0 flex z-40 md:hidden" role="dialog" aria-modal="true">
     
@@ -128,7 +132,7 @@ const Layout: React.FC<Props> = (props) => (
           <div className="flex items-center">
             <div className="ml-3">
               <p className="text-sm font-medium text-white">
-                {/* {session.user.name} */}
+                {session.user.name}
               </p>
               <p 
               onClick={() =>
@@ -162,6 +166,8 @@ const Layout: React.FC<Props> = (props) => (
   </div>
 </div>  
   </div>
-);
+  )
+  
+}
 
 export default Layout;

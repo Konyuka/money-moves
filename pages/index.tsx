@@ -10,33 +10,33 @@ export default function Login(){
     const [email, setEmail] = useState("michaelsaiba84@gmail.com");
     const [password, setPassword] = useState("password");
 
-    console.log("session", session);
+    // console.log("session", session);
 
     const login = async (event) => {
         event.preventDefault();
         event.stopPropagation();
 
         await signIn("credentials", {
-            email, password, callbackUrl: `${window.location.origin}/transaction`, redirect: false }
+            email, password, callbackUrl: `${window.location.origin}/transactions`, redirect: false }
         ).then(function(result){
             console.log(result)
             if (result.error !== null)
             {
                 if (result.status === 401)
                 {
-                    // setLoginError("Your username/password combination was incorrect. Please try again");
                     alert('Credentials Are Incorrect')
                     console.log(result)
                 }
                 else
                 {
                     // setLoginError(result.error);
-                    // Router.push("/transactions");
+                    // alert('Login Successful')
+                    Router.push("/transactions");
                 }
             }
             else
             {
-                Router.push('/');
+                Router.push('/transactions');
             }
         });
     }
