@@ -8,25 +8,27 @@ generator client {
 }
 
 model User {
-  id            Int       @default(autoincrement()) @id
-  name          String?
-  email         String?   @unique
-  password      String?   
-  createdAt     DateTime  @default(now()) @map(name: "created_at")
-  updatedAt     DateTime  @updatedAt @map(name: "updated_at")
-  transactions  Transaction[]
+  id                Int       @default(autoincrement()) @id
+  name              String?
+  email             String?   @unique
+  password          String?   
+  createdAt         DateTime  @default(now()) @map(name: "created_at")
+  updatedAt         DateTime  @updatedAt @map(name: "updated_at")
+  sentTransactions  Transaction[] @relation("sender")
+  receivedTransactions  Transaction[] @relation("receiver")
 
   @@map(name: "users")
 }
 
 model Transaction {
   id              Int       @default(autoincrement()) @id
-  transactionId   String
-  members         User      @relation(fields: [senderId, receiverId], references: [id, id])
+  sender          User?      @relation("sender", fields: [senderId], references: [id])
   senderId        Int
+  receiver        User?      @relation("receiver", fields: [receiverId], references: [id])
   receiverId      Int
-  currencies      Currency  @relation(fields: [sendCurrency, receiveCurrency], references: [id, id])
+  SCurrency      Currency  @relation("scurrency", fields: [sendCurrency], references: [id])
   sendCurrency    Int
+  RCurrency      Currency  @relation("rcurrency", fields: [receiveCurrency], references: [id])
   receiveCurrency Int
   rate            Float
   amount          Float
@@ -41,7 +43,8 @@ model Currency {
   name            String
   createdAt       DateTime  @default(now()) @map(name: "created_at")
   updatedAt       DateTime  @updatedAt @map(name: "updated_at")
-  transactions  Transaction[]
+  stransactions  Transaction[] @relation("scurrency")
+  rtransactions  Transaction[] @relation("rcurrency")
 
   @@map(name: "currencies")
 }
