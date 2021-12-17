@@ -8,14 +8,14 @@ export default NextAuth({
   providers: [
     CredentialProvider({
       name: "credentials",
-      // credentials: {
-      //   username: {
-      //     label: "Email",
-      //     type: "text",
-      //     placeholder: "johndoe@test.com",
-      //   },
-      //   password: { label: "Password", type: "password" },
-      // },
+      credentials: {
+        email: {
+          label: "Email",
+          type: "text",
+          placeholder: "johndoe@test.com",
+        },
+        password: { label: "Password", type: "password" },
+      },
       async authorize(credentials) {
                 const user = await prisma.user.findFirst({
                     where: {
