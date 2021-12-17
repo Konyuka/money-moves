@@ -7,8 +7,8 @@ import { hash } from 'bcryptjs';
 export default function Login(){
 
     const { data: session } = useSession();
-    const [email, setEmail] = useState("michaelsaiba84@gmail.com");
-    const [password, setPassword] = useState("password");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
     // console.log("session", session);
 

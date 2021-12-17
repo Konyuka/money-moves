@@ -4,9 +4,9 @@ import { useState } from "react";
 // import { hash } from 'bcryptjs';
 
 export default function Register(req, res){
-    const [name, setName] = useState("Michael Saiba");
-    const [email, setEmail] = useState("michaelsaiba84@gmail.com");
-    const [password, setPassword] = useState("password");
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
     const submitData = async (e: React.SyntheticEvent) => {
     e.preventDefault();
