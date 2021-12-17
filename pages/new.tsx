@@ -1,20 +1,54 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
-import { useSession } from "next-auth/react"
+import { useSession, getSession } from "next-auth/react"
 import Link from 'next/link'
-import { GetStaticProps } from "next"
+import { GetStaticProps, GetServerSideProps  } from "next"
 import prisma from '../lib/prisma';
 import Router from "next/router"
 
 
-export const getStaticProps: GetStaticProps = async () => {
+// export const getStaticProps: GetStaticProps = async () => {
+//   const users = await prisma.user.findMany({
+//     select: {
+//       id: true,
+//       name: true,
+//     },
+//   });
+//   return { props: { users} };
+// };
+
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const session = await getSession({ req });
   const users = await prisma.user.findMany({
     select: {
       id: true,
       name: true,
     },
   });
-  return { props: { users} };
+  
+  if (!session) {
+    res.statusCode = 403;
+    return { props: { drafts: [] } };
+  }
+
+  const accountUser = await prisma.user.findUnique({
+    where: {
+      // email: { email: session.user.email },
+      email: session.user.email,
+    },
+    select: {
+      id: true,
+      name: true,
+      USD: true, 
+      EUR: true,
+      NGN: true
+    },
+  });
+
+
+  return {
+    props: { accountUser, users },
+  };
 };
 
 const New: React.FC = (props) => {
@@ -27,16 +61,17 @@ const New: React.FC = (props) => {
     if (status === "unauthenticated") {
       return <p>Access Denied! Please <span className="font-bold text-green-600"> <Link href="/"><a>Login </a></Link> </span> </p>
     }
+    console.log(props.accountUser)
 
     const otherUsers = props.users.filter(obj => obj.id !== session.id);
     const user = session.user.name   
     const senderId = session.id   
-    // console.log(senderId)
+    // console.log(session.user)
     
     const [amount, setAmount] = useState(0);
     const [sourceCurrency, setSourceCurrency] = useState("");
     const [targetCurrency, setTargetCurrency] = useState("");
-    const [receiverId, setReceiverId] = useState();
+    const [receiverId, setReceiverId] = useState(0);
     const [rate, setRate] = useState("");
 
     const checkRates = async () =>{
@@ -55,10 +90,45 @@ const New: React.FC = (props) => {
     },
     [sourceCurrency, targetCurrency])
 
+    const updateReceiverBalance = async () => {
+        const bodyData = { 
+          receiverId:parseInt(receiverId),
+          targetCurrency,
+          toReceive:rate*amount 
+        };
+        await fetch(`${window.location.origin}/api/transaction/receiverbalance/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(bodyData),
+        });       
+    }
+
+    const updateSenderBalance = async () => {
+        console.log(body)
+        // console.log(postData.toReceive)
+        // console.log(postData.receiverId)
+        const initialBalance = props.accountUser[sourceCurrency]
+        const newBalance = initialBalance - amount
+
+        const body = { 
+          newBalance,
+          sourceCurrency,
+        };
+        await fetch(`${window.location.origin}/api/transaction/senderbalance/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });        
+    }
+
     const submitData = async (e: React.SyntheticEvent) => {
       e.preventDefault();
       
         if(senderId && receiverId && sourceCurrency && targetCurrency && amount && rate){
+          // if(sourceCurrency === "USD"){
+          //   alert('USD')
+          //   return;
+          // }
           try {
             const body = { 
               senderId,
@@ -75,6 +145,8 @@ const New: React.FC = (props) => {
               body: JSON.stringify(body),
             });
             alert('done')
+            await updateReceiverBalance();
+            await updateSenderBalance();
             await Router.push("/transactions");
           } catch (error) {
             console.error(error);
@@ -83,19 +155,6 @@ const New: React.FC = (props) => {
           alert('Provide all required data')
         }  
         
-      // try {
-      //   const body = { 
-      //     senderId: userId,
-      //   };
-      //   await fetch("https://michael-saiba-head-start.vercel.app/api/post/", {
-      //     method: "POST",
-      //     headers: { "Content-Type": "application/json" },
-      //     body: JSON.stringify(body),
-      //   });
-      //   await Router.push("/drafts");
-      // } catch (error) {
-      //   console.error(error);
-      // }
     };
 
   return (
@@ -188,6 +247,9 @@ const New: React.FC = (props) => {
               </div>
             </div>
           </form>
+          <button onClick={updateReceiverBalance} className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Update Balance
+          </button>
         </div>
       </div>
     </div>

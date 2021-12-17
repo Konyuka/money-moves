@@ -4,7 +4,11 @@ import { GetStaticProps } from "next"
 import { useSession } from "next-auth/react"
 import React from "react"
 import Layout from "../components/Layout";
+import prisma from '../lib/prisma';
+
+
 import Link from 'next/link'
+
 
 export const getStaticProps: GetStaticProps = async () => {
   const data = await prisma.transaction.findMany({
@@ -40,12 +44,13 @@ export default function Transactions(props){
     const userTransactions = props.transactions.filter(obj => obj.senderId === session.id );
     const user = props.users.filter(obj => obj.id === session.id );
     
-    console.log(user)
+    // console.log(user)
 
 
     return (
   
       <Layout>
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 flex justify-between pb-4">
           <h1 className="text-2xl font-semibold text-gray-900">Transactions</h1>
           <span className="font-normal">USD: <span className="text-indigo-600 font-bold">{user[0].USD}</span> </span>
@@ -55,6 +60,7 @@ export default function Transactions(props){
             New Transaction
           </button>
         </div>
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
           <div className="py-4">
             <div className="flex flex-col">
@@ -93,7 +99,7 @@ export default function Transactions(props){
                       <tbody className="bg-white divide-y divide-gray-200">
                         {
                           userTransactions.map((transaction)=>(
-                            <tr>
+                            <tr key={transaction.id}>
                               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                 {transaction.id}
                               </td>
