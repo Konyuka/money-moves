@@ -12,6 +12,9 @@ model User {
   name              String?
   email             String?   @unique
   password          String?   
+  USD               Float?    @default(1000) 
+  EUR               Float?    @default(0) 
+  NGN               Float?    @default(0) 
   createdAt         DateTime  @default(now()) @map(name: "created_at")
   updatedAt         DateTime  @updatedAt @map(name: "updated_at")
   sentTransactions  Transaction[] @relation("sender")

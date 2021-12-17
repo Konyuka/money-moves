@@ -18,8 +18,8 @@ export default async function handle(req, res) {
   const session = await getSession({ req });
   const result = await prisma.transaction.create({
     data: {
-      senderId: senderId,
-      receiverId: receiverId,
+      sender: { connect: { id: senderId } },
+      receiver: {connect: { id: parseInt(receiverId)}}, 
       sendCurrency:sourceCurrency,
       receiveCurrency: targetCurrency,
       rate: rate,

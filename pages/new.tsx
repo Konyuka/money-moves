@@ -33,10 +33,10 @@ const New: React.FC = (props) => {
     const senderId = session.id   
     // console.log(senderId)
     
-    const [amount, setAmount] = useState("");
+    const [amount, setAmount] = useState(0);
     const [sourceCurrency, setSourceCurrency] = useState("");
     const [targetCurrency, setTargetCurrency] = useState("");
-    const [receiverId, setReceiverId] = useState("");
+    const [receiverId, setReceiverId] = useState();
     const [rate, setRate] = useState("");
 
     const checkRates = async () =>{
@@ -65,7 +65,7 @@ const New: React.FC = (props) => {
               receiverId,
               sourceCurrency,
               targetCurrency,
-              amount,
+              amount:parseInt(amount),
               rate,
               toReceive:rate*amount 
             };
@@ -75,7 +75,7 @@ const New: React.FC = (props) => {
               body: JSON.stringify(body),
             });
             alert('done')
-            // await Router.push("/transactions");
+            await Router.push("/transactions");
           } catch (error) {
             console.error(error);
           }
@@ -161,7 +161,7 @@ const New: React.FC = (props) => {
 
                   <div className="col-span-6 pb-8">
                     <label className="block text-sm font-medium text-gray-700">Amount</label>
-                    <input required onChange={(e) => setAmount(e.target.value)} value={amount} type="number" name="street-address" id="street-address" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                    <input required onChange={(e) => setAmount(parseInt(e.target.value))} value={amount} type="number" name="street-address" id="street-address" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                   </div>
 
                   <div className="col-span-2 sm:col-span-1 lg:col-span-1">

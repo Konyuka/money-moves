@@ -6,11 +6,29 @@ import React from "react"
 import Layout from "../components/Layout";
 import Link from 'next/link'
 
+export const getStaticProps: GetStaticProps = async () => {
+  const data = await prisma.transaction.findMany({
+  });
+  const transactions =  JSON.parse(JSON.stringify(data))
+
+  const userData = await prisma.user.findMany({
+    select: {
+      id: true,
+      name: true,
+      USD: true, 
+      EUR: true,
+      NGN: true
+    },
+  });
+  const users =  JSON.parse(JSON.stringify(userData))
+  
+
+  return { props: { transactions, users } };
+};
 
 
-export default function Transactions(){
+export default function Transactions(props){
     const { data: session, status } = useSession()
-
     if (status === "loading") {
       return <p>Loading...</p>
     }
@@ -19,14 +37,20 @@ export default function Transactions(){
       return <p>Access Denied! Please <span className="font-bold text-green-600"> <Link href="/"><a>Login </a></Link> </span> </p>
     }
 
+    const userTransactions = props.transactions.filter(obj => obj.senderId === session.id );
+    const user = props.users.filter(obj => obj.id === session.id );
+    
+    console.log(user)
+
+
     return (
   
       <Layout>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 flex justify-between pb-4">
           <h1 className="text-2xl font-semibold text-gray-900">Transactions</h1>
-          <span className="font-normal">USD: <span className="text-indigo-600 font-bold">1000.00</span> </span>
-          <span className="font-normal">EUR: <span className="text-indigo-600 font-bold">0.00</span> </span>
-          <span className="font-normal">NGN: <span className="text-indigo-600 font-bold">0.00</span> </span> 
+          <span className="font-normal">USD: <span className="text-indigo-600 font-bold">{user[0].USD}</span> </span>
+          <span className="font-normal">EUR: <span className="text-indigo-600 font-bold">{user[0].EUR}</span> </span>
+          <span className="font-normal">NGN: <span className="text-indigo-600 font-bold">{user[0].NGN}</span> </span> 
           <button onClick={() => Router.push("/new")} type="button" className="inline-flex items-center px-2 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
             New Transaction
           </button>
@@ -53,10 +77,13 @@ export default function Transactions(){
                             Value
                           </th>
                           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Currency
+                            Send Currency
                           </th>
                           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            CreatedAT
+                            Receive Currency
+                          </th>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Received Funds
                           </th>
                           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             UpdatedAt
@@ -64,29 +91,36 @@ export default function Transactions(){
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
-                        <tr>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            1
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            Jane Cooper
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            Michael Saiba
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            1000USD
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            USD
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            10 Jan 2020
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            10 Jan 2020
-                          </td>
-                        </tr>
+                        {
+                          userTransactions.map((transaction)=>(
+                            <tr>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {transaction.id}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {transaction.senderId}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {transaction.receiverId}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {transaction.amount}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {transaction.sendCurrency}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {transaction.receiveCurrency}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {transaction.toReceive}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {transaction.createdAt}
+                              </td>
+                            </tr>
+                          ))
+                        }
                       </tbody>
                     </table>
                   </div>
