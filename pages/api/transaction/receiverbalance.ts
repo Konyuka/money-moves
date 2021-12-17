@@ -17,7 +17,6 @@ export default async function handle(req, res) {
           },
         })
         
-        
         const newBalance = balance[targetCurrency] + toReceive
         console.log(newBalance)
         const result = await prisma.user.update({

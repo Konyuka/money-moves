@@ -125,31 +125,34 @@ const New: React.FC = (props) => {
       e.preventDefault();
       
         if(senderId && receiverId && sourceCurrency && targetCurrency && amount && rate){
-          // if(sourceCurrency === "USD"){
-          //   alert('USD')
-          //   return;
-          // }
-          try {
-            const body = { 
-              senderId,
-              receiverId,
-              sourceCurrency,
-              targetCurrency,
-              amount:parseInt(amount),
-              rate,
-              toReceive:rate*amount 
-            };
-            await fetch(`${window.location.origin}/api/transaction/`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(body),
-            });
-            alert('done')
-            await updateReceiverBalance();
-            await updateSenderBalance();
-            await Router.push("/transactions");
-          } catch (error) {
-            console.error(error);
+          
+          if(amount>props.accountUser[sourceCurrency]){
+            alert('Insufficient Balance!')
+            return;
+          }else{
+
+            try {
+              const body = { 
+                senderId,
+                receiverId,
+                sourceCurrency,
+                targetCurrency,
+                amount:parseInt(amount),
+                rate,
+                toReceive:rate*amount 
+              };
+              await fetch(`${window.location.origin}/api/transaction/`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body),
+              });
+              alert('done')
+              await updateReceiverBalance();
+              await updateSenderBalance();
+              await Router.push("/transactions");
+            } catch (error) {
+              console.error(error);
+            }
           }
         }else{
           alert('Provide all required data')
