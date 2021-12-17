@@ -81,8 +81,8 @@ const New: React.FC = (props) => {
         const rates = fxs[`${targetCurrency}`]
         console.log(targetCurrency)
         setRate(rates)
-        console.log(fxs)
-        console.log(rates);
+        // console.log(fxs)
+        // console.log(rates);
     }
 
     useEffect(() => {
@@ -104,7 +104,7 @@ const New: React.FC = (props) => {
     }
 
     const updateSenderBalance = async () => {
-        console.log(body)
+        // console.log(body)
         // console.log(postData.toReceive)
         // console.log(postData.receiverId)
         const initialBalance = props.accountUser[sourceCurrency]
@@ -250,9 +250,9 @@ const New: React.FC = (props) => {
               </div>
             </div>
           </form>
-          <button onClick={updateReceiverBalance} className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          {/* <button onClick={updateReceiverBalance} className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
             Update Balance
-          </button>
+          </button> */}
         </div>
       </div>
     </div>
