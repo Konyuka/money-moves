@@ -61,7 +61,6 @@ const New: React.FC = (props) => {
     if (status === "unauthenticated") {
       return <p>Access Denied! Please <span className="font-bold text-green-600"> <Link href="/"><a>Login </a></Link> </span> </p>
     }
-    console.log(props.accountUser)
 
     const otherUsers = props.users.filter(obj => obj.id !== session.id);
     const user = session.user.name   
