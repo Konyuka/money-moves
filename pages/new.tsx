@@ -75,7 +75,7 @@ const New: React.FC<Props> = (props: { accountUser, users }) => {
     const [amount, setAmount] = useState(0);
     const [sourceCurrency, setSourceCurrency] = useState("");
     const [targetCurrency, setTargetCurrency] = useState("");
-    const [receiverId, setReceiverId] = useState(0);
+    const [receiverId, setReceiverId] = useState(null);
     const [rate, setRate] = useState("");
 
     const checkRates = async () =>{
@@ -242,7 +242,7 @@ const New: React.FC<Props> = (props: { accountUser, users }) => {
 
                   <div className="col-span-2 sm:col-span-1 lg:col-span-1">
                     <label className="block text-sm font-medium text-gray-700">Received in <span className="text-indigo-600">{targetCurrency}</span></label>
-                    <input value={amount*rate} disabled type="text" name="postal-code" id="postal-code"  className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                    <input value={amount*parseInt(rate)} disabled type="text" name="postal-code" id="postal-code"  className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                   </div>
 
                 </div>
