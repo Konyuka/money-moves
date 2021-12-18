@@ -21,7 +21,7 @@ export default async function handle(req, res) {
         console.log(newBalance)
         const result = await prisma.user.update({
         where: {
-          id: receiverId,
+          id: parseInt(receiverId),
         },
         data: {
           [targetCurrency]: newBalance,
