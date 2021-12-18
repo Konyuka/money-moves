@@ -13,7 +13,7 @@ export default function Register(req, res){
     try {
         // const body = { name, email, password: await hash(password, 12) };
         const body = { name, email, password };
-        const checkEmail = await fetch("http://localhost:3000/api/auth/signup", {
+        const checkEmail = await fetch(`${window.location.origin}/api/auth/signup`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(body),
