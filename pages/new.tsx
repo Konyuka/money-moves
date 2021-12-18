@@ -72,21 +72,23 @@ const New: React.FC<Props> = (props: { accountUser, users }) => {
     const senderId = session.id   
     // console.log(session.user)
     
-    const [amount, setAmount] = useState(null);
+    const [amount, setAmount] = useState(0);
     const [sourceCurrency, setSourceCurrency] = useState("");
     const [targetCurrency, setTargetCurrency] = useState("");
     const [receiverId, setReceiverId] = useState(null);
-    const [rate, setRate] = useState(null);
+    const [rate, setRate] = useState(0);
 
     const checkRates = async () =>{
+        if(targetCurrency === sourceCurrency){
+          const rates = 1
+          setRate(rates)
+          return;
+        }
         const res = await fetch(`https://freecurrencyapi.net/api/v2/latest?apikey=0e8e9aa0-5ea0-11ec-b7f9-853f0cb3f3c3&base_currency=${sourceCurrency}`)
         const data = await res.json()
         const fxs = data.data
         const rates = fxs[`${targetCurrency}`]
-        console.log(targetCurrency)
         setRate(rates)
-        // console.log(fxs)
-        // console.log(rates);
     }
 
     useEffect(() => {
@@ -242,7 +244,7 @@ const New: React.FC<Props> = (props: { accountUser, users }) => {
 
                   <div className="col-span-2 sm:col-span-1 lg:col-span-1">
                     <label className="block text-sm font-medium text-gray-700">Received in <span className="text-indigo-600">{targetCurrency}</span></label>
-                    <input value={amount*parseInt(rate)} disabled type="text" name="postal-code" id="postal-code"  className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                    <input value={amount*rate} disabled type="text" name="postal-code" id="postal-code"  className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                   </div>
 
                 </div>
