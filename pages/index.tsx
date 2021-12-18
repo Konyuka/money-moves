@@ -5,12 +5,14 @@ import { useSession, signIn } from "next-auth/react"
 import { hash } from 'bcryptjs';
 
 export default function Login(){
-
-    const { data: session } = useSession();
+    
+    const { data: status } = useSession();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    // console.log("session", session);
+    if (status === "loading") {
+      return <p>Loading...</p>
+    }
 
     const login = async (event) => {
         event.preventDefault();
