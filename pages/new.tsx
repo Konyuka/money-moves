@@ -72,11 +72,11 @@ const New: React.FC<Props> = (props: { accountUser, users }) => {
     const senderId = session.id   
     // console.log(session.user)
     
-    const [amount, setAmount] = useState(0);
+    const [amount, setAmount] = useState(null);
     const [sourceCurrency, setSourceCurrency] = useState("");
     const [targetCurrency, setTargetCurrency] = useState("");
     const [receiverId, setReceiverId] = useState(null);
-    const [rate, setRate] = useState("");
+    const [rate, setRate] = useState(null);
 
     const checkRates = async () =>{
         const res = await fetch(`https://freecurrencyapi.net/api/v2/latest?apikey=0e8e9aa0-5ea0-11ec-b7f9-853f0cb3f3c3&base_currency=${sourceCurrency}`)
@@ -98,7 +98,7 @@ const New: React.FC<Props> = (props: { accountUser, users }) => {
         const bodyData = { 
           receiverId,
           targetCurrency,
-          toReceive:parseInt(rate)*amount 
+          toReceive:rate*amount 
         };
         await fetch(`${window.location.origin}/api/transaction/receiverbalance/`, {
           method: "POST",
@@ -143,7 +143,7 @@ const New: React.FC<Props> = (props: { accountUser, users }) => {
                 targetCurrency,
                 amount,
                 rate,
-                toReceive:parseInt(rate)*amount 
+                toReceive:rate*amount 
               };
               await fetch(`${window.location.origin}/api/transaction/`, {
                 method: "POST",
