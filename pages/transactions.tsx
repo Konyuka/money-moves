@@ -1,7 +1,7 @@
 import Router from "next/router"
 import { useState, useEffect  } from "react";
-import { GetStaticProps } from "next"
-import { useSession } from "next-auth/react"
+import { GetServerSideProps  } from "next"
+import { useSession, getSession } from "next-auth/react"
 import React from "react"
 import Layout from "../components/Layout";
 import prisma from '../lib/prisma';
@@ -10,10 +10,17 @@ import prisma from '../lib/prisma';
 import Link from 'next/link'
 
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const session = await getSession({ req });
+  if (!session) {
+    res.statusCode = 403;
+    return { props: {} };
+  }
+
   const data = await prisma.transaction.findMany({
   });
   const transactions =  JSON.parse(JSON.stringify(data))
+  const userTransactions = transactions.filter(obj => obj.senderId === session.id );
 
   const userData = await prisma.user.findMany({
     select: {
@@ -27,11 +34,11 @@ export const getStaticProps: GetStaticProps = async () => {
   const users =  JSON.parse(JSON.stringify(userData))
   
 
-  return { props: { transactions, users } };
+  return { props: { userTransactions, users } };
 };
 
 
-export default function Transactions(props){
+export default function Transactions(props: { userTransactions, users }){
     const { data: session, status } = useSession()
     if (status === "loading") {
       return <p>Loading...</p>
@@ -41,10 +48,10 @@ export default function Transactions(props){
       return <p>Access Denied! Please <span className="font-bold text-green-600"> <Link href="/"><a>Login </a></Link> </span> </p>
     }
 
-    const userTransactions = props.transactions.filter(obj => obj.senderId === session.id );
+    // const userTransactions = props.userTransactions.filter(obj => obj.senderId === session.id );
     const user = props.users.filter(obj => obj.id === session.id );
     
-    // console.log(user)
+    console.log(props.userTransactions)
 
 
     return (
@@ -98,7 +105,7 @@ export default function Transactions(props){
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
                         {
-                          userTransactions.map((transaction)=>(
+                          props.userTransactions.map((transaction)=>(
                             <tr key={transaction.id}>
                               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                 {transaction.id}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import { useSession, getSession } from "next-auth/react"
 import Link from 'next/link'
-import { GetStaticProps, GetServerSideProps  } from "next"
+import { GetServerSideProps  } from "next"
 import prisma from '../lib/prisma';
 import Router from "next/router"
 
@@ -19,6 +19,10 @@ import Router from "next/router"
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const session = await getSession({ req });
+  if (!session) {
+    res.statusCode = 403;
+    return { props: {} };
+  }
   const users = await prisma.user.findMany({
     select: {
       id: true,
@@ -26,11 +30,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     },
   });
   
-  if (!session) {
-    res.statusCode = 403;
-    return { props: { drafts: [] } };
-  }
-
   const accountUser = await prisma.user.findUnique({
     where: {
       // email: { email: session.user.email },
