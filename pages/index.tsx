@@ -6,13 +6,8 @@ import { hash } from 'bcryptjs';
 
 export default function Login(){
     
-    const { data: status } = useSession();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
-    if (status === "loading") {
-      return <p>Loading...</p>
-    }
 
     const login = async (event) => {
         event.preventDefault();
