@@ -23,7 +23,7 @@ export default async function handle(req, res) {
       sendCurrency:sourceCurrency,
       receiveCurrency: targetCurrency,
       rate: rate,
-      amount: amount,
+      amount:  parseInt(amount),
       toReceive: toReceive
     },
   });

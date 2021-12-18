@@ -96,9 +96,9 @@ const New: React.FC<Props> = (props: { accountUser, users }) => {
 
     const updateReceiverBalance = async () => {
         const bodyData = { 
-          receiverId:parseInt(receiverId),
+          receiverId,
           targetCurrency,
-          toReceive:rate*amount 
+          toReceive:parseInt(rate)*amount 
         };
         await fetch(`${window.location.origin}/api/transaction/receiverbalance/`, {
           method: "POST",
@@ -141,9 +141,9 @@ const New: React.FC<Props> = (props: { accountUser, users }) => {
                 receiverId,
                 sourceCurrency,
                 targetCurrency,
-                amount:parseInt(amount),
+                amount,
                 rate,
-                toReceive:rate*amount 
+                toReceive:parseInt(rate)*amount 
               };
               await fetch(`${window.location.origin}/api/transaction/`, {
                 method: "POST",
