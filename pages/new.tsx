@@ -51,7 +51,12 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   };
 };
 
-const New: React.FC = (props: { accountUser, users }) => {
+interface Props {
+  accountUser,
+  users
+}
+
+const New: React.FC<Props> = (props: { accountUser, users }) => {
   const { data: session, status } = useSession()
 
     if (status === "loading") {
