@@ -3,11 +3,16 @@ import prisma from "../../../lib/prisma";
 
 export default async function handle(req, res) {
         const session = await getSession({ req });
+        if (!session) {
+          res.statusCode = 403;
+          return;
+        }
         const { 
           receiverId,
           targetCurrency,
           toReceive
         } = req.body;
+
         const balance = await prisma.user.findUnique({
           where: {
             id: parseInt(receiverId),
@@ -18,7 +23,7 @@ export default async function handle(req, res) {
         })
         
         const newBalance = balance[targetCurrency] + toReceive
-        console.log(newBalance)
+        
         const result = await prisma.user.update({
         where: {
           id: parseInt(receiverId),

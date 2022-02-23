@@ -6,23 +6,14 @@ import { GetServerSideProps  } from "next"
 import prisma from '../lib/prisma';
 import Router from "next/router"
 
-
-// export const getStaticProps: GetStaticProps = async () => {
-//   const users = await prisma.user.findMany({
-//     select: {
-//       id: true,
-//       name: true,
-//     },
-//   });
-//   return { props: { users} };
-// };
-
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+
   const session = await getSession({ req });
   if (!session) {
     res.statusCode = 403;
     return { props: {} };
   }
+
   const users = await prisma.user.findMany({
     select: {
       id: true,
@@ -32,7 +23,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   
   const accountUser = await prisma.user.findUnique({
     where: {
-      // email: { email: session.user.email },
       email: session.user.email,
     },
     select: {
@@ -48,6 +38,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   return {
     props: { accountUser, users },
   };
+  
 };
 
 interface Props {
@@ -69,7 +60,6 @@ const New: React.FC<Props> = (props: { accountUser, users }) => {
     const otherUsers = props.users.filter(obj => obj.id !== session.id);
     const user = session.user.name   
     const senderId = session.id   
-    // console.log(session.user)
     
     const [amount, setAmount] = useState(0);
     const [sourceCurrency, setSourceCurrency] = useState("");
@@ -109,9 +99,6 @@ const New: React.FC<Props> = (props: { accountUser, users }) => {
     }
 
     const updateSenderBalance = async () => {
-        // console.log(body)
-        // console.log(postData.toReceive)
-        // console.log(postData.receiverId)
         const initialBalance = props.accountUser[sourceCurrency]
         const newBalance = initialBalance - amount
 
@@ -151,9 +138,9 @@ const New: React.FC<Props> = (props: { accountUser, users }) => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body),
               });
-              alert('done')
               await updateReceiverBalance();
               await updateSenderBalance();
+              alert('done')
               await Router.push("/transactions");
             } catch (error) {
               console.error(error);
